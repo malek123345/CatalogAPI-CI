@@ -14,7 +14,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+if (!app.Environment.IsEnvironment("Testing"))
+{
+using (var scope = app.Services.CreateScope())
+{
+var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+db.Database.EnsureCreated();
+}
+}
 // Swagger activé pour tester l'API localement et dans le conteneur
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -43,3 +50,4 @@ app.MapPost("/api/products", async (Product product, AppDbContext db) =>
 }).WithName("CreateProduct");
 
 app.Run();
+public partial class Program { }
